@@ -35,9 +35,18 @@ def validateState(tag):
     if(currcoins==42):
         return 0
     else:
-        return -1
-    
-    
+        return -1    
+
+def unbindAll():
+    for i in circ:
+        for j in i:
+            c.tag_unbind(j,'<Enter>')
+            c.tag_unbind(j,'<Leave>')
+            c.tag_unbind(j,'<1>')
+    for i in rect:
+        c.tag_unbind(i,'<Enter>')
+        c.tag_unbind(i,'<Leave>')
+        c.tag_unbind(i,'<1>')
 
 def onCircleEnter(event,tag):                
     #print('Got object click', event.x, event.y)
@@ -59,14 +68,19 @@ def onCircleClick(event,tag):
         currstate[tag][curr[tag]]=currcol
         currcol=3-currcol
         if(ret==-1):
-            print("Player %d's turn"%currcol)
+            #print("Player %d's turn"%currcol)
+            c.itemconfig(txt, text="Player %d's turn"%currcol)
         elif(ret==0):
-            print("It's a draw!")
-            root.destroy()
+            #print("It's a draw!")
+            c.itemconfig(txt, text="  It's a draw!")
+            unbindAll()
+            root.after(2000,root.destroy)
             return
         else:
-            print("Player %d wins!"%ret)
-            root.destroy()
+            #print("Player %d wins!"%ret)
+            c.itemconfig(txt, text="Player %d wins!"%ret)
+            unbindAll()
+            root.after(2000,root.destroy)
             return
         curr[tag]+=1
         if(curr[tag]<6):
@@ -84,7 +98,7 @@ for i in range(7):
     c.tag_bind(rect[i], '<Enter>', lambda event, tag=i: onCircleEnter(event, tag))
     c.tag_bind(rect[i], '<Leave>', lambda event, tag=i: onCircleLeave(event, tag))
     c.tag_bind(rect[i], '<1>', lambda event, tag=i: onCircleClick(event, tag))
-print("Player 1's turn")
+txt = c.create_text(350, 800, text="Player 1's turn", font=('Purisa',40), anchor="sw")
 
 
 root.mainloop()
