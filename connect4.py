@@ -171,7 +171,14 @@ def negamax(state, tag, curr, ccoins, ccol, currheur, depth):
         if(curr[i]<6):
             bestval.append(-negamax(copy.deepcopy(state), i, curr[:], ccoins+1, 3-ccol, newcheur, depth-1))
     #print(ccol,tag,ccoins,depth,bestval,state)
-    return min(bestval)            
+    return min(bestval)    
+
+def updatescoreTxt(score):
+    for i in range(7):
+        if(score[i]!=-10000000000000):
+            c.itemconfig(scoreTxt[i], text="%d"%score[i])
+        else:
+            c.itemconfig(scoreTxt[i], text="Full")
 
 def unbindAll():
     for i in circ:
@@ -205,10 +212,10 @@ def onCircleClick(event,tag):
         nextlist = []
         for i in range(7):
             if(curr[i]<6):
-                nextlist.append(negamax(copy.deepcopy(currstate),i,curr[:],currcoins,currcol,cheur,3))
+                nextlist.append(negamax(copy.deepcopy(currstate),i,curr[:],currcoins,currcol,cheur,4))
             else:
                 nextlist.append(-10000000000000)
-        print(nextlist)
+        updatescoreTxt(nextlist)
         #playnext = nextlist.index(max(nextlist))
         #print(currstate)
         """nextlist = []
@@ -252,5 +259,6 @@ for i in range(7):
     c.tag_bind(rect[i], '<Leave>', lambda event, tag=i: onCircleLeave(event, tag))
     c.tag_bind(rect[i], '<1>', lambda event, tag=i: onCircleClick(event, tag))
 txt = c.create_text(350, 800, text="Player 1's turn", font=('Purisa',40), anchor="sw")
+scoreTxt = [(c.create_text(150+100*i, 80, text="0", anchor="sw")) for i in range(7)]
 
 root.mainloop()
