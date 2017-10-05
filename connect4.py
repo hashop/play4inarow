@@ -1,5 +1,6 @@
 import tkinter as tk
 import copy
+import random
         
 root = tk.Tk()
 
@@ -196,6 +197,7 @@ def onCircleLeave(event,tag):
     
 def onCircleClick(event,tag):                
     if(curr[tag]<6):
+        onCircleLeave(event,tag)
         global currcol, currcoins, cheur
         c.itemconfig(circ[tag][curr[tag]], fill=col[currcol])
         cheur = heuristic(currstate,tag,curr,currcoins,currcol,cheur)
@@ -212,23 +214,32 @@ def onCircleClick(event,tag):
                 nextlist.append(-INF)
         updatescoreTxt(nextlist)
         if(ret==-1):
-            c.itemconfig(txt, text="Player %d's turn"%currcol)
+            if(currcol==1):
+                c.itemconfig(txt, text="   Your turn")
+            else:
+                c.itemconfig(txt, text="   Thinking...")
+                root.update()
         elif(ret==0):
             c.itemconfig(txt, text="  It's a draw!")
             unbindAll()
             root.after(2000,root.destroy)
             return
         else:
-            c.itemconfig(txt, text="Player %d wins!"%ret)
+            if(ret==1):
+                c.itemconfig(txt, text="    You win!")
+            else:
+                c.itemconfig(txt, text="    AI wins!")
             unbindAll()
             root.after(2000,root.destroy)
             return
-        if(curr[tag]<6):
+        if(curr[tag]<6 and currcol==2):
             onCircleEnter(event,tag)
-        """playnext = nextlist.index(max(nextlist))
         if(currcol==2):
-            onCircleClick(event,playnext)
-            onCircleEnter(event,tag)"""
+            m = max(nextlist)
+            maxlist = [i for i, j in enumerate(nextlist) if j == m]
+            random.shuffle(maxlist)
+            onCircleClick(event,maxlist[0])
+            onCircleEnter(event,tag)
     
 for i in range(7):
     curr.append(0)
@@ -242,7 +253,7 @@ for i in range(7):
     c.tag_bind(rect[i], '<Enter>', lambda event, tag=i: onCircleEnter(event, tag))
     c.tag_bind(rect[i], '<Leave>', lambda event, tag=i: onCircleLeave(event, tag))
     c.tag_bind(rect[i], '<1>', lambda event, tag=i: onCircleClick(event, tag))
-txt = c.create_text(350, 800, text="Player 1's turn", font=('Purisa',40), anchor="sw")
+txt = c.create_text(350, 800, text="   Your turn", font=('Purisa',40), anchor="sw")
 scoreTxt = [(c.create_text(170+100*i, 80, text="0", anchor="sw")) for i in range(7)]
 
 root.mainloop()
