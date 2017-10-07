@@ -7,7 +7,7 @@ root = tk.Tk()
 INF = 10000000000000
 DEPTH = 5
 
-c = tk.Canvas(root, height=1000, width=1000, bg='white')
+c = tk.Canvas(root, height=1000, width=1200, bg='white')
 c.pack()
 rect = []
 curr = []
@@ -17,6 +17,9 @@ currcoins = 0
 col = {1:'red', 2:'yellow'}
 oppdir = {1:0, 2:5, 3:7, 4:6}
 numscores = {0:0, 1:1, 2:2, 3:15, 4:10000000000}
+togColor = {0:'gray90', 1:'black'}
+togText = {0:'Show Negamax\n      Scores', 1:' Hide Negamax\n      Scores'}
+togval = 0
 currcol = 1
 cheur = 0
 
@@ -240,10 +243,18 @@ def onCircleClick(event,tag):
             random.shuffle(maxlist)
             onCircleClick(event,maxlist[0])
             onCircleEnter(event,tag)
+            
+def ToggleClick(event):
+    global togval
+    for i in scoreTxt:
+        c.itemconfig(i, fill=togColor[togval])
+    c.itemconfig(hidetxt, text=togText[togval])
+    togval = 1-togval
     
 for i in range(7):
     curr.append(0)
     rect.append(c.create_rectangle(150+100*i, 100, 250+100*i, 700, fill="blue", width=0)) 
+    c.create_rectangle(165+100*i, 60, 245+100*i, 85, fill="gray90", width=1)
     circ.append([])
     for j in range(6):
         circ[i].append(c.create_oval(160+100*i, 610-100*j, 240+100*i, 690-100*j, fill="white", outline="blue", width=8))
@@ -254,6 +265,11 @@ for i in range(7):
     c.tag_bind(rect[i], '<Leave>', lambda event, tag=i: onCircleLeave(event, tag))
     c.tag_bind(rect[i], '<1>', lambda event, tag=i: onCircleClick(event, tag))
 txt = c.create_text(350, 800, text="   Your turn", font=('Purisa',40), anchor="sw")
+
+hiderect = c.create_rectangle(895, 55, 1080, 110, fill="gray90", width=1)
+hidetxt = c.create_text(918, 107, text=' Hide Negamax\n      Scores', font=('Purisa',15), anchor="sw")
 scoreTxt = [(c.create_text(170+100*i, 80, text="0", anchor="sw")) for i in range(7)]
+c.tag_bind(hiderect, '<1>', ToggleClick)
+c.tag_bind(hidetxt, '<1>', ToggleClick)
 
 root.mainloop()
